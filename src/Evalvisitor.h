@@ -8,11 +8,11 @@
 class EvalVisitor : public Python3ParserBaseVisitor {
   class Scope {
     std::map<std::string, std::any> varTable;
-
   public:
     void var_register(std::string x, std::any y) { varTable[x] = y; }
     std::any var_query(std::string x) { return varTable[x]; }
   };
+  class nothing{};
   Scope scope;
   sjtu::int2048 just_try;
 public:
@@ -55,60 +55,60 @@ public:
 
 
   std::any add(std::any x, std::any y) {
-    if(std::any_cast<double *>(x)||std::any_cast<double *>(y)){
+    if(std::any_cast<double>(&x)||std::any_cast<double>(&y)){
       double ans=0;
-      if(std::any_cast<double *>(x)) ans+=std::any_cast<double>(x);
-      else if(std::any_cast<int *>(x)) ans+=std::any_cast<int>(x);
+      if(std::any_cast<double >(&x)) ans+=std::any_cast<double>(x);
+      else if(std::any_cast<int>(&x)) ans+=std::any_cast<int>(x);
       else ans+=std::any_cast<bool>(x);
-      if(std::any_cast<double *>(y)) ans+=std::any_cast<double>(y);
-      else if(std::any_cast<int *>(y)) ans+=std::any_cast<int>(y);
+      if(std::any_cast<double >(&y)) ans+=std::any_cast<double>(y);
+      else if(std::any_cast<int >(&y)) ans+=std::any_cast<int>(y);
       else ans+=std::any_cast<bool>(y);
       return ans;
     }
     else{
       int ans=0;
-      if(std::any_cast<int *>(x)) ans+=std::any_cast<int>(x);
+      if(std::any_cast<int>(&x)) ans+=std::any_cast<int>(x);
       else ans+=std::any_cast<bool>(x);
-      if(std::any_cast<int *>(y)) ans+=std::any_cast<int>(y);
+      if(std::any_cast<int >(&y)) ans+=std::any_cast<int>(y);
       else ans+=std::any_cast<bool>(y);
       return ans;
     }
     return std::any_cast<std::string>(x) + std::any_cast<std::string>(y);
   }
   std::any del(std::any x, std::any y) {
-    if(std::any_cast<double *>(x)||std::any_cast<double *>(y)){
+    if(std::any_cast<double>(&x)||std::any_cast<double>(&y)){
       double ans=0;
-      if(std::any_cast<double *>(x)) ans+=std::any_cast<double>(x);
-      else if(std::any_cast<int *>(x)) ans+=std::any_cast<int>(x);
+      if(std::any_cast<double >(&x)) ans+=std::any_cast<double>(x);
+      else if(std::any_cast<int>(&x)) ans+=std::any_cast<int>(x);
       else ans+=std::any_cast<bool>(x);
-      if(std::any_cast<double *>(y)) ans-=std::any_cast<double>(y);
-      else if(std::any_cast<int *>(y)) ans-=std::any_cast<int>(y);
+      if(std::any_cast<double>(&y)) ans-=std::any_cast<double>(y);
+      else if(std::any_cast<int>(&y)) ans-=std::any_cast<int>(y);
       else ans-=std::any_cast<bool>(y);
       return ans;
     }
     else{
       int ans=0;
-      if(std::any_cast<int *>(x)) ans+=std::any_cast<int>(x);
+      if(std::any_cast<int>(&x)) ans+=std::any_cast<int>(x);
       else ans+=std::any_cast<bool>(x);
-      if(std::any_cast<int *>(y)) ans-=std::any_cast<int>(y);
+      if(std::any_cast<int >(&y)) ans-=std::any_cast<int>(y);
       else ans-=std::any_cast<bool>(y);
       return ans;
     }
   }
   std::any mul(std::any x, std::any y) {
-    if(std::any_cast<double *>(x)||std::any_cast<double *>(y)){
+    if(std::any_cast<double>(&x)||std::any_cast<double>(&y)){
       double ans=1;
-      if(std::any_cast<double *>(x)) ans*=std::any_cast<double>(x);
-      else if(std::any_cast<int *>(x)) ans*=std::any_cast<int>(x);
+      if(std::any_cast<double>(&x)) ans*=std::any_cast<double>(x);
+      else if(std::any_cast<int>(&x)) ans*=std::any_cast<int>(x);
       else ans*=std::any_cast<bool>(x);
-      if(std::any_cast<double *>(y)) ans*=std::any_cast<double>(y);
-      else if(std::any_cast<int *>(y)) ans*=std::any_cast<int>(y);
+      if(std::any_cast<double>(&y)) ans*=std::any_cast<double>(y);
+      else if(std::any_cast<int>(&y)) ans*=std::any_cast<int>(y);
       else ans*=std::any_cast<bool>(y);
       return ans;
     }
-    else if(std::any_cast<std::string *>(x)||std::any_cast<std::string *>(y)){
+    else if(std::any_cast<std::string>(&x)||std::any_cast<std::string>(&y)){
       std::string ans;
-      if(std::any_cast<std::string *>(x)){
+      if(std::any_cast<std::string>(&x)){
         ans=std::any_cast<std::string>(x);
         int num=std::any_cast<int>(y);
         while(num){
@@ -116,7 +116,7 @@ public:
           num/=2;
         }
       }
-      if(std::any_cast<std::string *>(y)){
+      if(std::any_cast<std::string>(&y)){
         ans=std::any_cast<std::string>(y);
         int num=std::any_cast<int>(x);
         while(num){
@@ -128,28 +128,28 @@ public:
     }
     else{
       int ans=1;
-      if(std::any_cast<int *>(x)) ans*=std::any_cast<int>(x);
+      if(std::any_cast<int>(&x)) ans*=std::any_cast<int>(x);
       else ans*=std::any_cast<bool>(x);
-      if(std::any_cast<int *>(y)) ans*=std::any_cast<int>(y);
+      if(std::any_cast<int>(&y)) ans*=std::any_cast<int>(y);
       else ans*=std::any_cast<bool>(y);
       return ans;
     }
   }
   std::any div1(std::any x, std::any y) {
     double ans=0;
-    if(std::any_cast<double *>(x)) ans=std::any_cast<double>(x);
-    else if(std::any_cast<int *>(x)) ans=std::any_cast<int>(x);
+    if(std::any_cast<double>(&x)) ans=std::any_cast<double>(x);
+    else if(std::any_cast<int>(&x)) ans=std::any_cast<int>(x);
     else ans=std::any_cast<bool>(x);
-    if(std::any_cast<double *>(y)) ans/=std::any_cast<double>(y);
-    else if(std::any_cast<int *>(y)) ans/=std::any_cast<int>(y);
+    if(std::any_cast<double>(&y)) ans/=std::any_cast<double>(y);
+    else if(std::any_cast<int>(&y)) ans/=std::any_cast<int>(y);
     else ans/=std::any_cast<bool>(y);
     return ans;
   }
   std::any div2(std::any x, std::any y) {
     int ans=0;
-    if(std::any_cast<int *>(x)) ans=std::any_cast<int>(x);
+    if(std::any_cast<int>(&x)) ans=std::any_cast<int>(x);
     else ans=std::any_cast<bool>(x);
-    if(std::any_cast<int *>(y)) ans/=std::any_cast<int>(y);
+    if(std::any_cast<int>(&y)) ans/=std::any_cast<int>(y);
     else ans/=std::any_cast<bool>(y);
     return ans;
   }
@@ -169,37 +169,37 @@ public:
       }
     } else if (au->getText() == "+=") {
       auto val = visit(array[1]);
-      auto x = std::any_cast<std::string *>(visit(array[0]));
-      std::any v = scope.var_query(*x);
-      scope.var_register(*x, add(v, val));
+      auto x = array[0]->getText();
+      std::any v = scope.var_query(x);
+      scope.var_register(x, add(v, val));
     } else if (au->getText() == "-=") {
       auto val = visit(array[1]);
-      auto x = std::any_cast<std::string *>(visit(array[0]));
-      std::any v = scope.var_query(*x);
-      scope.var_register(*x, del(v, val));
+      auto x = array[0]->getText();
+      std::any v = scope.var_query(x);
+      scope.var_register(x, del(v, val));
     } else if (au->getText() == "*=") {
       auto val = visit(array[1]);
-      auto x = std::any_cast<std::string *>(visit(array[0]));
-      std::any v = scope.var_query(*x);
-      scope.var_register(*x, mul(v, val));
+      auto x = array[0]->getText();
+      std::any v = scope.var_query(x);
+      scope.var_register(x, mul(v, val));
 
     } else if (au->getText() == "/=") {
       auto val = visit(array[1]);
-      auto x = std::any_cast<std::string *>(visit(array[0]));
-      std::any v = scope.var_query(*x);
-      scope.var_register(*x, div1(v, val));
+      auto x = array[0]->getText();
+      std::any v = scope.var_query(x);
+      scope.var_register(x, div1(v, val));
 
     } else if (au->getText() == "//=") {
       auto val = visit(array[1]);
-      auto x = std::any_cast<std::string *>(visit(array[0]));
-      std::any v = scope.var_query(*x);
-      scope.var_register(*x, div2(v, val));
+      auto x = array[0]->getText();
+      std::any v = scope.var_query(x);
+      scope.var_register(x, div2(v, val));
 
     } else if (au->getText() == "%=") {
       auto val = visit(array[1]);
-      auto x = std::any_cast<std::string *>(visit(array[0]));
-      std::any v = scope.var_query(*x);
-      scope.var_register(*x, del(x,mul(div1(x,val),val)));
+      auto x = array[0]->getText();
+      std::any v = scope.var_query(x);
+      scope.var_register(x, del(v, mul(div2(v,val),val)));
     }
     return 1;
   }
@@ -260,12 +260,15 @@ public:
     auto array = ctx->test();
     std::vector<std::any> ans;
     for (int i = 0; i < array.size(); i++)
-      ans[i] = array[i]->getText();
+      ans.push_back(visit(array[i]));
+  //  std::cout<<"****"<<ctx->getText()<<std::endl;
     return ans;
   }
 
   std::any visitTest(Python3Parser::TestContext *ctx) override {
+  //  std::cout<<"*"<<ctx->getText()<<std::endl;
     return visit(ctx->or_test());
+  //  std::cout<<"**"<<ctx->getText()<<std::endl;
   }
 
   std::any visitOr_test(Python3Parser::Or_testContext *ctx) override {
@@ -308,6 +311,8 @@ public:
     bool flag = true;
     for (int i = 0; i < array.size(); i++) {
       if (op[i]->getText() == "==") {
+
+
       }
     }
     return flag;
@@ -418,8 +423,11 @@ public:
       if (ctx->ADD())
         return visit(ctx->factor());
       else {
-        int x = std::any_cast<int>(visit(ctx->factor()));
-        return -x;
+        std::any x = visit(ctx->factor());
+        if(std::any_cast<int>(&x))
+          return -std::any_cast<int>(x);
+        if(std::any_cast<double>(&x))
+          return -std::any_cast<double>(x);
       }
     }
     return visit(ctx->atom_expr());
@@ -430,19 +438,26 @@ public:
       std::string fuc = ctx->atom()->getText();
       auto array = std::any_cast<std::vector<std::any>>(visit(ctx->trailer()));
       if (fuc == "print") {
+        //    std::cout<<"BOOL"<<array.size()<<std::endl;
         for (int i = 0; i < array.size(); i++) {
-          if (std::any_cast<int *>(array[i]))
+          if (std::any_cast<int>(&array[i])){
             std::cout << std::any_cast<int>(array[i]) << ' ';
-          if (std::any_cast<double *>(array[i]))
-            printf("%.6lf ", std::any_cast<double>(array[i]));
-          if (std::any_cast<std::string *>(array[i])) {
-            std::cout << std::any_cast<std::string *>(array[i]) << ' ';
           }
-          if (std::any_cast<bool *>(array[i])) {
+          if (std::any_cast<double>(&array[i]))
+            printf("%.6lf ", std::any_cast<double>(array[i]));
+          
+          if (std::any_cast<std::string>(&array[i])) {
+            std::cout << std::any_cast<std::string>(array[i]) << ' ';
+          }
+
+          if (std::any_cast<bool>(&array[i])) {
             if (std::any_cast<bool>(array[i]) == true)
               std::cout << "True" << ' ';
             else
               std::cout << "False" << ' ';
+          }
+          if(std::any_cast<nothing>(&array[i])){
+            std::cout<< "None" <<' ';
           }
         }
         printf("\n");
@@ -451,34 +466,34 @@ public:
       if (fuc == "int") {
         if(array.size()>1) std::cerr<<"(int)more than one"<<std::endl;
         int ans;
-        if(std::any_cast<int*>(array[0])) ans=std::any_cast<int>(array[0]);
-        if(std::any_cast<bool*>(array[0])) ans=std::any_cast<bool>(array[0]);
-        if(std::any_cast<double*>(array[0])) ans=std::any_cast<double>(array[0]);
+        if(std::any_cast<int>(&array[0])) ans=std::any_cast<int>(array[0]);
+        if(std::any_cast<bool>(&array[0])) ans=std::any_cast<bool>(array[0]);
+        if(std::any_cast<double>(&array[0])) ans=std::any_cast<double>(array[0]);
         return ans;
       }
       if (fuc == "float") {
         if(array.size()>1) std::cerr<<"(double)more than one"<<std::endl;
         double ans;
-        if(std::any_cast<int*>(array[0])) ans=std::any_cast<int>(array[0]);
-        if(std::any_cast<bool*>(array[0])) ans=std::any_cast<bool>(array[0]);
-        if(std::any_cast<double*>(array[0])) ans=std::any_cast<double>(array[0]);
+        if(std::any_cast<int>(&array[0])) ans=std::any_cast<int>(array[0]);
+        if(std::any_cast<bool>(&array[0])) ans=std::any_cast<bool>(array[0]);
+        if(std::any_cast<double>(&array[0])) ans=std::any_cast<double>(array[0]);
         return ans;
       }
       if (fuc == "str") {
         if(array.size()>1) std::cerr<<"(str)more than one"<<std::endl;
         std::string ans;
-        if(std::any_cast<int*>(array[0])) ans=std::any_cast<int>(array[0]);
-        if(std::any_cast<bool*>(array[0])) ans=std::any_cast<bool>(array[0]);
-        if(std::any_cast<double*>(array[0])) ans=std::any_cast<double>(array[0]);
+        if(std::any_cast<int>(&array[0])) ans=std::any_cast<int>(array[0]);
+        if(std::any_cast<bool>(&array[0])) ans=std::any_cast<bool>(array[0]);
+        if(std::any_cast<double>(&array[0])) ans=std::any_cast<double>(array[0]);
         return ans;
       }
       if (fuc == "bool") {
         if(array.size()>1) std::cerr<<"(bool)more than one"<<std::endl;
         bool ans;
-        if(std::any_cast<int*>(array[0])) ans=std::any_cast<int>(array[0]);
-        if(std::any_cast<bool*>(array[0])) ans=std::any_cast<bool>(array[0]);
-        if(std::any_cast<double*>(array[0])) ans=std::any_cast<double>(array[0]);
-        if(std::any_cast<std::string*>(array[0])){
+        if(std::any_cast<int>(&array[0])) ans=std::any_cast<int>(array[0]);
+        if(std::any_cast<bool>(&array[0])) ans=std::any_cast<bool>(array[0]);
+        if(std::any_cast<double>(&array[0])) ans=std::any_cast<double>(array[0]);
+        if(std::any_cast<std::string>(&array[0])){
           if(std::any_cast<std::string>(array[0])=="") ans=false;
           else ans=true;
         }
@@ -502,6 +517,12 @@ public:
     }
     return ans;
   }
+
+  std::string get_string(std::string x){
+    std::string ans=x.substr(1,x.size()-2);
+    return ans;
+  }
+
   std::any visitAtom(Python3Parser::AtomContext *ctx) override {
     if (ctx->NUMBER()) {
       return string_to_int(ctx->NUMBER()->getText());
@@ -510,23 +531,26 @@ public:
       return scope.var_query(ctx->NAME()->getText());
     }
     if (ctx->FALSE()) {
-      return (bool){0};
+    //  std::cout<<"FALSE"<<std::endl;
+      return false;
     }
     if (ctx->TRUE()) {
-      return (bool){1};
+      return true;
     }
     if (ctx->STRING(0)) {
       std::string ans = "";
       auto array = ctx->STRING();
       for (int i = 0; i < array.size(); i++) {
-        ans = ans + array[i]->getText();
+    //  std::cout<<"STRING: "<<std::endl;
+        ans = ans + get_string(array[i]->getText());
+    //  std::cout<<"STRING_END: "<<std::endl;
       }
       return ans;
     }
     if (ctx->test()) {
       return visit(ctx->test());
     }
-    antlr4::tree::TerminalNode *x;
+    EvalVisitor:: nothing x;
     return x;
   }
 
@@ -534,17 +558,17 @@ public:
     auto array = ctx->argument();
     std::vector<std::any> ans;
     for (int i = 0; i < array.size(); i++) {
-      ans[i] = visit(array[i]);
+      ans.push_back(visit(array[i]));
     }
     return ans;
   }
 
   std::any visitArgument(Python3Parser::ArgumentContext *ctx) override {
     auto array = ctx->test();
-	if(array.size()==1){
-		return visit(array[0]);
-	}
-	return visit(array[1]);
+    if(array.size()==1){
+      return visit(array[0]);
+    }
+    return visit(array[1]);
   }
 };
 
