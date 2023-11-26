@@ -4,6 +4,7 @@
 
 #include "Python3ParserBaseVisitor.h"
 #include "int2048.h"
+#include "Fuction.h"
 
 class EvalVisitor : public Python3ParserBaseVisitor {
   class Scope {
@@ -14,7 +15,6 @@ class EvalVisitor : public Python3ParserBaseVisitor {
   };
   class nothing{};
   Scope scope;
-  sjtu::int2048 just_try;
 public:
   /*	std::any visit(antlr4::tree::ParseTree *tree) override {
                   std::cout << tree->getText() << std::endl;
@@ -65,7 +65,10 @@ public:
       else ans+=std::any_cast<bool>(y);
       return ans;
     }
-    else{
+    else if(std::any_cast<std::string>(&x)&&std::any_cast<std::string>(&y)){
+      return std::any_cast<std::string>(x) + std::any_cast<std::string>(y);
+    }
+    else {
       int ans=0;
       if(std::any_cast<int>(&x)) ans+=std::any_cast<int>(x);
       else ans+=std::any_cast<bool>(x);
@@ -73,7 +76,6 @@ public:
       else ans+=std::any_cast<bool>(y);
       return ans;
     }
-    return std::any_cast<std::string>(x) + std::any_cast<std::string>(y);
   }
   std::any del(std::any x, std::any y) {
     if(std::any_cast<double>(&x)||std::any_cast<double>(&y)){
@@ -107,20 +109,23 @@ public:
       return ans;
     }
     else if(std::any_cast<std::string>(&x)||std::any_cast<std::string>(&y)){
-      std::string ans;
+      std::string ans="",v;
       if(std::any_cast<std::string>(&x)){
-        ans=std::any_cast<std::string>(x);
+        v=std::any_cast<std::string>(x);
         int num=std::any_cast<int>(y);
+    //    std::cout<<"here"<<std::endl;
         while(num){
-          if(num%2==1) ans=ans+ans;
+          if(num%2==1) ans=ans+v;
+          v=v+v;
           num/=2;
         }
       }
       if(std::any_cast<std::string>(&y)){
-        ans=std::any_cast<std::string>(y);
+        v=std::any_cast<std::string>(y);
         int num=std::any_cast<int>(x);
         while(num){
-          if(num%2==1) ans=ans+ans;
+          if(num%2==1) ans=ans+v;
+          v=v+v;
           num/=2;
         }
       }
@@ -154,7 +159,14 @@ public:
     return ans;
   }
 
-
+  std::vector<std::string> get_name(Python3Parser::TestlistContext *ctx){
+    auto array = ctx->test();
+    std::vector<std::string>ans;
+    for(int i=0;i<array.size();i++){
+      ans.push_back(array[i]->getText());
+    }
+    return ans;
+  }
   std::any visitExpr_stmt(Python3Parser::Expr_stmtContext *ctx) override {
     auto array = ctx->testlist();
     auto au = ctx->augassign();
@@ -162,44 +174,45 @@ public:
       auto val =
           std::any_cast<std::vector<std::any>>(visit(array[array.size() - 1]));
       for (int i = array.size() - 2; i >= 0; i--) {
-        auto x = std::any_cast<std::vector<std::any>>(visit(array[i]));
+        auto x = get_name(array[i]);
         for (int j = 0; j < val.size(); j++) {
-          scope.var_register(std::any_cast<std::string>(x[j]), val[j]);
+          scope.var_register(x[j], val[j]);
         }
       }
     } else if (au->getText() == "+=") {
-      auto val = visit(array[1]);
+      auto val = std::any_cast<std::vector<std::any>>(visit(array[1]));
       auto x = array[0]->getText();
       std::any v = scope.var_query(x);
-      scope.var_register(x, add(v, val));
+      scope.var_register(x, add(v, val[0]));
     } else if (au->getText() == "-=") {
-      auto val = visit(array[1]);
+      auto val = std::any_cast<std::vector<std::any>>(visit(array[1]));
       auto x = array[0]->getText();
       std::any v = scope.var_query(x);
-      scope.var_register(x, del(v, val));
+      scope.var_register(x, del(v, val[0]));
     } else if (au->getText() == "*=") {
-      auto val = visit(array[1]);
+      auto val = std::any_cast<std::vector<std::any>>(visit(array[1]));
       auto x = array[0]->getText();
       std::any v = scope.var_query(x);
-      scope.var_register(x, mul(v, val));
+      scope.var_register(x, mul(v, val[0]));
+    //  std::cout<<x<<std::endl;
 
     } else if (au->getText() == "/=") {
-      auto val = visit(array[1]);
+      auto val = std::any_cast<std::vector<std::any>>(visit(array[1]));
       auto x = array[0]->getText();
       std::any v = scope.var_query(x);
-      scope.var_register(x, div1(v, val));
+      scope.var_register(x, div1(v, val[0]));
 
     } else if (au->getText() == "//=") {
-      auto val = visit(array[1]);
+      auto val = std::any_cast<std::vector<std::any>>(visit(array[1]));
       auto x = array[0]->getText();
       std::any v = scope.var_query(x);
-      scope.var_register(x, div2(v, val));
+      scope.var_register(x, div2(v, val[0]));
 
     } else if (au->getText() == "%=") {
-      auto val = visit(array[1]);
+      auto val = std::any_cast<std::vector<std::any>>(visit(array[1]));
       auto x = array[0]->getText();
       std::any v = scope.var_query(x);
-      scope.var_register(x, del(v, mul(div2(v,val),val)));
+      scope.var_register(x, del(v, mul(div2(v,val),val[0])));
     }
     return 1;
   }
@@ -218,9 +231,6 @@ public:
     return visitChildren(ctx);
   }
 
-  std::any visitReturn_stmt(Python3Parser::Return_stmtContext *ctx) override {
-    return visit(ctx->testlist());
-  }
 
   std::any visitCompound_stmt(Python3Parser::Compound_stmtContext *ctx) override {
     if(ctx->if_stmt()) return visit(ctx->if_stmt());
@@ -231,7 +241,7 @@ public:
   std::any visitIf_stmt(Python3Parser::If_stmtContext *ctx) override {
     auto array = ctx->test();
     for(int i=0;i < array.size(); i++){
-      if(std::any_cast<bool>(visit(array[i]))){
+      if(turn_to_bool(visit(array[i]))){
         return visit(ctx->suite(i));
       }
     }
@@ -239,7 +249,7 @@ public:
   }
 
   std::any visitWhile_stmt(Python3Parser::While_stmtContext *ctx) override {
-    while(std::any_cast<bool>(visit(ctx->test()))){
+    while(turn_to_bool(visit(ctx->test()))){
       visit(ctx->suite());
     }
     return 1;
@@ -270,7 +280,18 @@ public:
     return visit(ctx->or_test());
   //  std::cout<<"**"<<ctx->getText()<<std::endl;
   }
+  bool turn_to_bool(std::any x){
+    bool ans;
+    if(std::any_cast<int>(&x)) ans=std::any_cast<int>(x);
+    if(std::any_cast<bool>(&x)) ans=std::any_cast<bool>(x);
+    if(std::any_cast<double>(&x)) ans=std::any_cast<double>(x);
+    if(std::any_cast<std::string>(&x)){
+      if(std::any_cast<std::string>(x)=="") ans=false;
+      else ans=true;
+    }
+    return ans;
 
+  }
   std::any visitOr_test(Python3Parser::Or_testContext *ctx) override {
     bool flag = false;
     auto array = ctx->and_test();
@@ -278,7 +299,8 @@ public:
       return visit(array[0]);
     }
     for (auto x : array) {
-      flag |= std::any_cast<bool>(visit(x));
+      if(flag==true) break;
+      flag |= turn_to_bool(visit(x));
     }
     return flag;
   }
@@ -290,18 +312,39 @@ public:
       return visit(array[0]);
     }
     for (auto x : array) {
-      flag &= std::any_cast<bool>(visit(x));
+      if(flag==false) break;
+      flag &= turn_to_bool(visit(x));
     }
     return flag;
   }
 
   std::any visitNot_test(Python3Parser::Not_testContext *ctx) override {
     if (ctx->not_test()) {
-      return !std::any_cast<bool>(visit(ctx->not_test()));
+      return !turn_to_bool(visit(ctx->not_test()));
     }
     return visit(ctx->comparison());
   }
-
+  double get_val(std::any x){
+    if(std::any_cast<int>(&x)){
+      return std::any_cast<int>(x);
+    }
+    if(std::any_cast<double>(&x)){
+      return std::any_cast<double>(x);
+    }
+    return std::any_cast<bool>(x);
+  }
+  bool can_not_to_number(std::string x){
+    int num=0;
+    if(x[0]=='-') x=x.substr(1);
+    for(int i=0;i<x.length();i++){
+      if(x[i]=='.'){
+        num++;
+        if(num==2) return false;
+      }
+      else if(x[i]<'0'||x[i]>'9') return false;
+    }
+    return true;
+  }
   std::any visitComparison(Python3Parser::ComparisonContext *ctx) override {
     auto array = ctx->arith_expr();
     if (array.size() == 1) {
@@ -309,10 +352,55 @@ public:
     }
     auto op = ctx->comp_op();
     bool flag = true;
-    for (int i = 0; i < array.size(); i++) {
-      if (op[i]->getText() == "==") {
-
-
+    std::vector<std::any> ans;
+    for(int i = 0; i < array.size(); i++){
+      ans.push_back(visit(array[i]));
+    }
+  //  std::cout<<ctx->getText()<<std::endl;
+    for (int i = 1; i < array.size(); i++) {
+      if(flag==false) break;
+      if(std::any_cast<std::string>(&ans[i-1])||std::any_cast<std::string>(&ans[i])){
+        if(std::any_cast<std::string>(&ans[i-1])&&std::any_cast<std::string>(&ans[i])){
+          if(op[i-1]->getText()=="==")
+            flag&=(std::any_cast<std::string>(ans[i-1])==std::any_cast<std::string>(ans[i]));
+          else if(op[i-1]->getText()=="<=")
+            flag&=(std::any_cast<std::string>(ans[i-1])<=std::any_cast<std::string>(ans[i]));
+          else if(op[i-1]->getText()==">=")
+            flag&=(std::any_cast<std::string>(ans[i-1])>=std::any_cast<std::string>(ans[i]));
+          else if(op[i-1]->getText()=="<")
+            flag&=(std::any_cast<std::string>(ans[i-1])<std::any_cast<std::string>(ans[i]));
+          else if(op[i-1]->getText()==">")
+            flag&=(std::any_cast<std::string>(ans[i-1])>std::any_cast<std::string>(ans[i]));
+          else 
+            flag&=(std::any_cast<std::string>(ans[i-1])!=std::any_cast<std::string>(ans[i]));
+        }
+        else if(!can_not_to_number(std::any_cast<std::string>(ans[i-1]))) flag=false;
+        else if(!can_not_to_number(std::any_cast<std::string>(ans[i]))) flag= false;
+      }
+    //  std::cout<<get_val(ans[i-1])<<' '<<get_val(ans[i])<<std::endl;
+      else if (op[i-1]->getText() == "==") {
+        if(fabs(get_val(ans[i-1])-get_val(ans[i]))>1e-9)
+          flag=false;
+      }
+      else if (op[i-1]->getText() == "<=") {
+        if(get_val(ans[i-1])>get_val(ans[i])+1e-9)
+          flag=false;
+      }
+      else if (op[i-1]->getText() == ">=") {
+        if(get_val(ans[i-1])<get_val(ans[i])-1e-9)
+          flag=false;
+      }
+      else if (op[i-1]->getText() == "<") {
+        if(get_val(ans[i-1])>get_val(ans[i])-1e-9)
+          flag=false;
+      }
+      else if (op[i-1]->getText() == ">") {
+        if(get_val(ans[i-1])<get_val(ans[i])+1e-9)
+          flag=false;
+      }
+      else {
+        if(fabs(get_val(ans[i-1])-get_val(ans[i]))<=1e-9)
+          flag=false;
       }
     }
     return flag;
@@ -327,10 +415,10 @@ public:
     std::any ans = visit(array[0]);
     for(int i=1;i<array.size();i++){
       if(op[i-1]->getText()=="+"){
-        ans=add(ans,array[i]);
+        ans=add(ans,visit(array[i]));
       }
       else{
-        ans=del(ans,array[i]);
+        ans=del(ans,visit(array[i]));
       }
     }
     return ans;
@@ -467,16 +555,18 @@ public:
         if(array.size()>1) std::cerr<<"(int)more than one"<<std::endl;
         int ans;
         if(std::any_cast<int>(&array[0])) ans=std::any_cast<int>(array[0]);
-        if(std::any_cast<bool>(&array[0])) ans=std::any_cast<bool>(array[0]);
-        if(std::any_cast<double>(&array[0])) ans=std::any_cast<double>(array[0]);
+        else if(std::any_cast<bool>(&array[0])) ans=std::any_cast<bool>(array[0]);
+        else if(std::any_cast<double>(&array[0])) ans=std::any_cast<double>(array[0]);
+        else ans=string_to_int(std::any_cast<std::string>(array[0]));
         return ans;
       }
       if (fuc == "float") {
         if(array.size()>1) std::cerr<<"(double)more than one"<<std::endl;
         double ans;
         if(std::any_cast<int>(&array[0])) ans=std::any_cast<int>(array[0]);
-        if(std::any_cast<bool>(&array[0])) ans=std::any_cast<bool>(array[0]);
-        if(std::any_cast<double>(&array[0])) ans=std::any_cast<double>(array[0]);
+        else if(std::any_cast<bool>(&array[0])) ans=std::any_cast<bool>(array[0]);
+        else if(std::any_cast<double>(&array[0])) ans=std::any_cast<double>(array[0]);
+        else ans=string_to_double(std::any_cast<std::string>(array[0]));
         return ans;
       }
       if (fuc == "str") {
@@ -511,13 +601,23 @@ public:
   }
 
   int string_to_int(std::string s) {
-    int ans = 0;
+    int ans = 0,f=1;
+    if(s[0]=='-') s=s.substr(1),f=-f;
     for (int i = 0; i < s.length(); i++) {
       ans = ans * 10 + s[i] - '0';
     }
-    return ans;
+    return ans*f;
   }
-
+  double string_to_double(std::string s){
+    double ans=0,bit=0;int f=1;
+    if(s[0]=='-') s=s.substr(1),f=-f;
+    for(int i=0;i<s.length();i++){
+      bit*=10;
+      if(s[i]=='.') bit=1;
+      else ans=ans*10+s[i]-'0';
+    }
+    return ans/bit;
+  }
   std::string get_string(std::string x){
     std::string ans=x.substr(1,x.size()-2);
     return ans;
