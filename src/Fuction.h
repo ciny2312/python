@@ -9,10 +9,13 @@
 class EvalVisitor : public Python3ParserBaseVisitor {
 public:
   std::any visitFuncdef(Python3Parser::FuncdefContext *ctx) override {
+    std::cout<<ctx->getText()<<std::endl;
     std::string x = ctx->NAME()->getText();
     fuc_num++;
-    fuc_name[x]=fuc_num;
+    fucTable[x]=fuc_num;
     fuc[fuc_num].fuc_register(ctx->suite());
+    fuc[fuc_num].var.clear();
+    fuc[fuc_num].var_val.clear();
     visit(ctx->parameters());
     return 1;
   }
@@ -28,10 +31,10 @@ public:
     auto array = ctx ->tfpdef();
     auto val = ctx -> test();
     for(int i=0;i< array.size();i++){
-      fuc[fuc_num].register_var(std::any_cast<std::string>(visit(array[i])));
+      fuc[fuc_num].fuc_register_var(std::any_cast<std::string>(visit(array[i])));
     }
     for(int i=0;i<val.size();i++){
-      fuc[fuc_num].register_var_val(visit(val[i]));
+      fuc[fuc_num].fuc_register_var_val(visit(val[i]));
     }
   }
 

@@ -15,6 +15,7 @@
 #include <iostream>
 #include <vector>
 
+
 // 请不要使用 using namespace std;
 
 namespace sjtu {
@@ -102,6 +103,8 @@ public:
   friend int2048 move_right(const int2048 &,int );
   friend int2048 inverse(const int2048 &);
   friend int2048 baoli(const int2048 &,const int2048 &);
+  friend double turn_to_double(const int2048 &);
+  friend std::string turn_to_str(const int2048 &);
 };
 } // namespace sjtu
 

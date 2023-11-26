@@ -2,9 +2,9 @@
 #ifndef PYTHON_INTERPRETER_EVALVISITOR_H
 #define PYTHON_INTERPRETER_EVALVISITOR_H
 
-#include "Fuction.h"
 #include "Python3ParserBaseVisitor.h"
 #include "int2048.h"
+#include "Fuction.h"
 
 class EvalVisitor : public Python3ParserBaseVisitor {
   int scope_num = 0, cur_num = 0, fuc_num = 0;
@@ -81,8 +81,8 @@ public:
         ans += std::any_cast<bool>(x);
       if (std::any_cast<double>(&y))
         ans += std::any_cast<double>(y);
-      else if (std::any_cast<int>(&y))
-        ans += std::any_cast<int>(y);
+      else if (std::any_cast<sjtu::int2048>(&y))
+        ans += turn_to_double(std::any_cast<sjtu::int2048>(y));
       else
         ans += std::any_cast<bool>(y);
       return ans;
@@ -90,13 +90,13 @@ public:
                std::any_cast<std::string>(&y)) {
       return std::any_cast<std::string>(x) + std::any_cast<std::string>(y);
     } else {
-      int ans = 0;
-      if (std::any_cast<int>(&x))
-        ans += std::any_cast<int>(x);
+      sjtu::int2048 ans = 0;
+      if (std::any_cast<sjtu::int2048>(&x))
+        ans += std::any_cast<sjtu::int2048>(x);
       else
         ans += std::any_cast<bool>(x);
-      if (std::any_cast<int>(&y))
-        ans += std::any_cast<int>(y);
+      if (std::any_cast<sjtu::int2048>(&y))
+        ans += std::any_cast<sjtu::int2048>(y);
       else
         ans += std::any_cast<bool>(y);
       return ans;
@@ -107,25 +107,25 @@ public:
       double ans = 0;
       if (std::any_cast<double>(&x))
         ans += std::any_cast<double>(x);
-      else if (std::any_cast<int>(&x))
-        ans += std::any_cast<int>(x);
+      else if (std::any_cast<sjtu::int2048>(&x))
+        ans += turn_to_double(std::any_cast<sjtu::int2048>(x));
       else
         ans += std::any_cast<bool>(x);
       if (std::any_cast<double>(&y))
         ans -= std::any_cast<double>(y);
-      else if (std::any_cast<int>(&y))
-        ans -= std::any_cast<int>(y);
+      else if (std::any_cast<sjtu::int2048>(&y))
+        ans -= turn_to_double(std::any_cast<sjtu::int2048>(y));
       else
         ans -= std::any_cast<bool>(y);
       return ans;
     } else {
-      int ans = 0;
-      if (std::any_cast<int>(&x))
-        ans += std::any_cast<int>(x);
+      sjtu::int2048 ans = 0;
+      if (std::any_cast<sjtu::int2048>(&x))
+        ans += std::any_cast<sjtu::int2048>(x);
       else
         ans += std::any_cast<bool>(x);
-      if (std::any_cast<int>(&y))
-        ans -= std::any_cast<int>(y);
+      if (std::any_cast<sjtu::int2048>(&y))
+        ans -= std::any_cast<sjtu::int2048>(y);
       else
         ans -= std::any_cast<bool>(y);
       return ans;
@@ -136,14 +136,14 @@ public:
       double ans = 1;
       if (std::any_cast<double>(&x))
         ans *= std::any_cast<double>(x);
-      else if (std::any_cast<int>(&x))
-        ans *= std::any_cast<int>(x);
+      else if (std::any_cast<sjtu::int2048>(&x))
+        ans *= turn_to_double(std::any_cast<sjtu::int2048>(x));
       else
         ans *= std::any_cast<bool>(x);
       if (std::any_cast<double>(&y))
         ans *= std::any_cast<double>(y);
-      else if (std::any_cast<int>(&y))
-        ans *= std::any_cast<int>(y);
+      else if (std::any_cast<sjtu::int2048>(&y))
+        ans *= turn_to_double(std::any_cast<sjtu::int2048>(y));
       else
         ans *= std::any_cast<bool>(y);
       return ans;
@@ -152,20 +152,20 @@ public:
       std::string ans = "", v;
       if (std::any_cast<std::string>(&x)) {
         v = std::any_cast<std::string>(x);
-        int num = std::any_cast<int>(y);
+        int num = turn_to_double(std::any_cast<sjtu::int2048>(y));
         //    std::cout<<"here"<<std::endl;
         while (num) {
-          if (num % 2 == 1)
+          if (num &1)
             ans = ans + v;
           v = v + v;
-          num /= 2;
+          num >>=1;
         }
       }
       if (std::any_cast<std::string>(&y)) {
         v = std::any_cast<std::string>(y);
-        int num = std::any_cast<int>(x);
+        int num = turn_to_double(std::any_cast<sjtu::int2048>(x));
         while (num) {
-          if (num % 2 == 1)
+          if (num &1)
             ans = ans + v;
           v = v + v;
           num /= 2;
@@ -173,13 +173,13 @@ public:
       }
       return ans;
     } else {
-      int ans = 1;
-      if (std::any_cast<int>(&x))
-        ans *= std::any_cast<int>(x);
+      sjtu::int2048 ans = 1;
+      if (std::any_cast<sjtu::int2048>(&x))
+        ans *= std::any_cast<sjtu::int2048>(x);
       else
         ans *= std::any_cast<bool>(x);
-      if (std::any_cast<int>(&y))
-        ans *= std::any_cast<int>(y);
+      if (std::any_cast<sjtu::int2048>(&y))
+        ans *= std::any_cast<sjtu::int2048>(y);
       else
         ans *= std::any_cast<bool>(y);
       return ans;
@@ -189,26 +189,26 @@ public:
     double ans = 0;
     if (std::any_cast<double>(&x))
       ans = std::any_cast<double>(x);
-    else if (std::any_cast<int>(&x))
-      ans = std::any_cast<int>(x);
+    else if (std::any_cast<sjtu::int2048>(&x))
+      ans = turn_to_double(std::any_cast<sjtu::int2048>(x));
     else
       ans = std::any_cast<bool>(x);
     if (std::any_cast<double>(&y))
       ans /= std::any_cast<double>(y);
-    else if (std::any_cast<int>(&y))
-      ans /= std::any_cast<int>(y);
+    else if (std::any_cast<sjtu::int2048>(&y))
+      ans /= turn_to_double(std::any_cast<sjtu::int2048>(y));
     else
       ans /= std::any_cast<bool>(y);
     return ans;
   }
   std::any div2(std::any x, std::any y) {
-    int ans = 0;
-    if (std::any_cast<int>(&x))
-      ans = std::any_cast<int>(x);
+    sjtu::int2048 ans = 0;
+    if (std::any_cast<sjtu::int2048>(&x))
+      ans = std::any_cast<sjtu::int2048>(x);
     else
       ans = std::any_cast<bool>(x);
-    if (std::any_cast<int>(&y))
-      ans /= std::any_cast<int>(y);
+    if (std::any_cast<sjtu::int2048>(&y))
+      ans /= std::any_cast<sjtu::int2048>(y);
     else
       ans /= std::any_cast<bool>(y);
     return ans;
@@ -396,8 +396,8 @@ public:
   }
   bool turn_to_bool(std::any x) {
     bool ans;
-    if (std::any_cast<int>(&x))
-      ans = std::any_cast<int>(x);
+    if (std::any_cast<sjtu::int2048>(&x))
+      ans = !is_zero(std::any_cast<sjtu::int2048>(x));
     if (std::any_cast<bool>(&x))
       ans = std::any_cast<bool>(x);
     if (std::any_cast<double>(&x))
@@ -445,11 +445,14 @@ public:
     return visit(ctx->comparison());
   }
   double get_val(std::any x) {
-    if (std::any_cast<int>(&x)) {
-      return std::any_cast<int>(x);
+    if (std::any_cast<sjtu::int2048>(&x)) {
+      return turn_to_double(std::any_cast<sjtu::int2048>(x));
     }
     if (std::any_cast<double>(&x)) {
       return std::any_cast<double>(x);
+    }
+    if (std::any_cast<std::string>(&x)){
+      return string_to_int(std::any_cast<std::string>(x));
     }
     return std::any_cast<bool>(x);
   }
@@ -504,13 +507,49 @@ public:
           else
             flag &= (std::any_cast<std::string>(ans[i - 1]) !=
                      std::any_cast<std::string>(ans[i]));
-        } else if (!can_not_to_number(std::any_cast<std::string>(ans[i - 1])))
+          continue;
+        } else if (!can_not_to_number(std::any_cast<std::string>(ans[i - 1]))){
           flag = false;
-        else if (!can_not_to_number(std::any_cast<std::string>(ans[i])))
+          continue;
+        }
+        else if (!can_not_to_number(std::any_cast<std::string>(ans[i]))){
           flag = false;
+          continue;
+        }
       }
-      //  std::cout<<get_val(ans[i-1])<<' '<<get_val(ans[i])<<std::endl;
-      else if (op[i - 1]->getText() == "==") {
+      if(std::any_cast<sjtu::int2048>(&ans[i - 1]) ||
+          std::any_cast<sjtu::int2048>(&ans[i])){
+            if(std::any_cast<sjtu::int2048>(&ans[i - 1]) && std::any_cast<sjtu::int2048>(&ans[i])){
+              if (op[i - 1]->getText() == "==")
+                flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) ==
+                        std::any_cast<sjtu::int2048>(ans[i]));
+              else if (op[i - 1]->getText() == "<=")
+                flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) <=
+                        std::any_cast<sjtu::int2048>(ans[i]));
+              else if (op[i - 1]->getText() == ">=")
+                flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) >=
+                        std::any_cast<sjtu::int2048>(ans[i]));
+              else if (op[i - 1]->getText() == "<")
+                flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) <
+                        std::any_cast<sjtu::int2048>(ans[i]));
+              else if (op[i - 1]->getText() == ">")
+                flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) >
+                        std::any_cast<sjtu::int2048>(ans[i]));
+              else
+                flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) !=
+                        std::any_cast<sjtu::int2048>(ans[i]));
+              continue;
+            }
+          /*  if(std::any_cast<sjtu::int2048>(&ans[i - 1])){
+              if(std::any_cast<double>(&ans[i])){
+                
+              }
+            }
+            if(std::any_cast<sjtu::int2048>(&ans[i])){
+              
+            }*/
+          }
+      if (op[i - 1]->getText() == "==") {
         if (fabs(get_val(ans[i - 1]) - get_val(ans[i])) > 1e-9)
           flag = false;
       } else if (op[i - 1]->getText() == "<=") {
@@ -638,13 +677,33 @@ public:
         return visit(ctx->factor());
       else {
         std::any x = visit(ctx->factor());
-        if (std::any_cast<int>(&x))
-          return -std::any_cast<int>(x);
+        if (std::any_cast<sjtu::int2048>(&x))
+          return -std::any_cast<sjtu::int2048>(x);
         if (std::any_cast<double>(&x))
           return -std::any_cast<double>(x);
       }
     }
     return visit(ctx->atom_expr());
+  }
+
+  std::string double_to_string(double x){
+    int val=x;
+    std::string ans="";
+    while(val){
+      char c='0'+val%10;
+      ans=c+ans;
+      val/=10;
+    }
+    double v=x-val;
+    if(fabs(v)<=1e-9) return ans;
+    ans+=".";
+    while(fabs(v)>1e-9){
+      v*=10;val=v;
+      char c='0'+val;
+      ans+=c;
+      v-=val;
+    }
+    return ans;
   }
 
   std::any visitAtom_expr(Python3Parser::Atom_exprContext *ctx) override {
@@ -656,24 +715,29 @@ public:
         if (fucname == "print") {
           //    std::cout<<"BOOL"<<array.size()<<std::endl;
           for (int i = 0; i < array.size(); i++) {
-            if (std::any_cast<int>(&array[i])) {
-              std::cout << std::any_cast<int>(array[i]) << ' ';
+            if (std::any_cast<sjtu::int2048>(&array[i])) {
+              std::cout << std::any_cast<sjtu::int2048>(array[i]);
+              if(i!=array.size()-1) std::cout << ' ';
             }
-            if (std::any_cast<double>(&array[i]))
-              printf("%.6lf ", std::any_cast<double>(array[i]));
-
+            if (std::any_cast<double>(&array[i])){
+              printf("%.6lf", std::any_cast<double>(array[i]));
+              if(i!=array.size()-1) std::cout << ' ';
+            }
             if (std::any_cast<std::string>(&array[i])) {
-              std::cout << std::any_cast<std::string>(array[i]) << ' ';
+              std::cout << std::any_cast<std::string>(array[i]);
+              if(i!=array.size()-1) std::cout << ' ';
             }
 
             if (std::any_cast<bool>(&array[i])) {
               if (std::any_cast<bool>(array[i]) == true)
-                std::cout << "True" << ' ';
+                std::cout << "True";
               else
-                std::cout << "False" << ' ';
+                std::cout << "False";
+              if(i!=array.size()-1) std::cout << ' ';
             }
             if (std::any_cast<nothing>(&array[i])) {
-              std::cout << "None" << ' ';
+              std::cout << "None" ;
+              if(i!=array.size()-1) std::cout << ' ';
             }
           }
           printf("\n");
@@ -682,9 +746,9 @@ public:
         if (fucname == "int") {
           if (array.size() > 1)
             std::cerr << "(int)more than one" << std::endl;
-          int ans;
-          if (std::any_cast<int>(&array[0]))
-            ans = std::any_cast<int>(array[0]);
+          sjtu::int2048 ans;
+          if (std::any_cast<sjtu::int2048>(&array[0]))
+            ans = std::any_cast<sjtu::int2048>(array[0]);
           else if (std::any_cast<bool>(&array[0]))
             ans = std::any_cast<bool>(array[0]);
           else if (std::any_cast<double>(&array[0]))
@@ -697,8 +761,8 @@ public:
           if (array.size() > 1)
             std::cerr << "(double)more than one" << std::endl;
           double ans;
-          if (std::any_cast<int>(&array[0]))
-            ans = std::any_cast<int>(array[0]);
+          if (std::any_cast<sjtu::int2048>(&array[0]))
+            ans = turn_to_double(std::any_cast<sjtu::int2048>(array[0]));
           else if (std::any_cast<bool>(&array[0]))
             ans = std::any_cast<bool>(array[0]);
           else if (std::any_cast<double>(&array[0]))
@@ -711,20 +775,26 @@ public:
           if (array.size() > 1)
             std::cerr << "(str)more than one" << std::endl;
           std::string ans;
-          if (std::any_cast<int>(&array[0]))
-            ans = std::any_cast<int>(array[0]);
-          if (std::any_cast<bool>(&array[0]))
-            ans = std::any_cast<bool>(array[0]);
-          if (std::any_cast<double>(&array[0]))
-            ans = std::any_cast<double>(array[0]);
+          if (std::any_cast<sjtu::int2048>(&array[0])){
+            ans = turn_to_str(std::any_cast<sjtu::int2048>(array[0]));
+            //do some thing
+          }
+          if (std::any_cast<bool>(&array[0])){
+            if(std::any_cast<bool>(array[0])==true)
+              ans="True";
+            else ans="False";
+          }
+          if (std::any_cast<double>(&array[0])){
+            ans = double_to_string(std::any_cast<double>(array[0]));
+          }
           return ans;
         }
         if (fucname == "bool") {
           if (array.size() > 1)
             std::cerr << "(bool)more than one" << std::endl;
           bool ans;
-          if (std::any_cast<int>(&array[0]))
-            ans = std::any_cast<int>(array[0]);
+          if (std::any_cast<sjtu::int2048>(&array[0]))
+            ans = is_zero(std::any_cast<sjtu::int2048>(array[0]));
           if (std::any_cast<bool>(&array[0]))
             ans = std::any_cast<bool>(array[0]);
           if (std::any_cast<double>(&array[0]))
@@ -738,6 +808,8 @@ public:
           return ans;
         }
       }
+      if(fucname=="print") return 0;
+//    std::cout<<ctx->getText()<<' '<<fucname<<std::endl;
       int num = fucTable[fucname];
       cur_num++;
       int ex = fuc[num].var.size() - fuc[num].var_val.size();
@@ -753,7 +825,9 @@ public:
       auto re = visit(fuc[num].into_fuc());
       scope[cur_num].clear();
       cur_num--;
-      return std::any_cast<do_return>(re).ans;
+      if(std::any_cast<do_return>(&re))
+        return std::any_cast<do_return>(re).ans;
+      return 0;
     }
     return visit(ctx->atom());
   }
@@ -794,7 +868,8 @@ public:
 
   std::any visitAtom(Python3Parser::AtomContext *ctx) override {
     if (ctx->NUMBER()) {
-      return string_to_int(ctx->NUMBER()->getText());
+
+      return sjtu::int2048(ctx->NUMBER()->getText());
     }
     if (ctx->NAME()) {
       std::string x = ctx->NAME()->getText();
@@ -841,6 +916,50 @@ public:
       return visit(array[0]);
     }
     return visit(array[1]);
+  }
+
+
+  std::any visitFuncdef(Python3Parser::FuncdefContext *ctx) override {
+  //  std::cout<<ctx->getText()<<std::endl;
+    std::string x = ctx->NAME()->getText();
+    fuc_num++;
+    fucTable[x]=fuc_num;
+    fuc[fuc_num].fuc_register(ctx->suite());
+    fuc[fuc_num].var.clear();
+    fuc[fuc_num].var_val.clear();
+    visit(ctx->parameters());
+    return 1;
+  }
+
+  std::any visitParameters(Python3Parser::ParametersContext *ctx) override {
+    if(ctx->typedargslist())
+      return visit(ctx->typedargslist());
+    nothing x;
+    return x;
+  }
+
+  std::any visitTypedargslist(Python3Parser::TypedargslistContext *ctx) override {
+    auto array = ctx ->tfpdef();
+    auto val = ctx -> test();
+    for(int i=0;i< array.size();i++){
+      fuc[fuc_num].fuc_register_var(std::any_cast<std::string>(visit(array[i])));
+    }
+    for(int i=0;i<val.size();i++){
+      fuc[fuc_num].fuc_register_var_val(visit(val[i]));
+    }
+    return 1;
+  }
+
+  std::any visitTfpdef(Python3Parser::TfpdefContext *ctx) override {
+    return ctx->NAME()->getText();
+  }
+
+  std::any visitReturn_stmt(Python3Parser::Return_stmtContext *ctx) override {
+    do_return x;
+    if(ctx->testlist()){
+      x.ans=std::any_cast<std::vector<std::any> >(visit(ctx->testlist()));
+    }
+    return x;
   }
 };
 

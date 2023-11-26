@@ -386,6 +386,7 @@ namespace sjtu {
   //  printf("HERE:\n");x.print();puts("");
   //  int2048(y).print();puts("");
     int2048 ans;bool o;
+    ans.a.clear();
     if(x.op==y.op) o=0;
     else o=1;
     x.op=y.op=0;
@@ -411,6 +412,9 @@ namespace sjtu {
       ans+=int2048(1);
     }
     ans.op=o;
+    while(ans.a.size()>1&&ans.a[ans.a.size()-1]==0){
+      ans.a.pop_back();
+    }
     return ans;
   }
 
@@ -436,6 +440,7 @@ namespace sjtu {
   std::ostream &operator<<(std::ostream &os,const int2048 &x){
   //  printf("Now I cout:");
   //  val.print();
+  //  os<<"H "<<x.a.size()<<' '<<x.a[x.a.size()-1]<<std::endl;
     if(is_zero(x)){
       os<<0;
       return os;
@@ -531,6 +536,30 @@ namespace sjtu {
     return bigger_eq_abs(x,y);
   }
   
+  double turn_to_double(const int2048 &x){
+    double ans=0;
+    for(int i=x.a.size()-1;i>=0;i--){
+      ans=ans*10+x.a[i];
+    }
+    return ans;
+  }
+  std::string int_to_str(long long x){
+    std::string ans="";
+    while(x){
+      char c='0'+x%10;
+      ans=c+ans;
+      x/=10;
+    }
+    return ans;
+  }
+  std::string turn_to_str(const int2048 &x){
+    std::string ans="";
+    for(int i=1;i<x.a.size();i++){
+      ans=int_to_str(x.a[i])+ans;
+    }
+    return ans;
+  }
+
 } // namespace sjtu
 /*
 1 68 19 61 78 56 86 30 66 46 00 67 51 94 83 04 76 55 83 96 02 08 01 663720250075908693888302580638
