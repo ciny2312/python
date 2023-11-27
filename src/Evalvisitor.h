@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 #ifndef PYTHON_INTERPRETER_EVALVISITOR_H
 #define PYTHON_INTERPRETER_EVALVISITOR_H
 
@@ -206,18 +207,18 @@ public:
     return ans;
   }
   std::any div2(std::any x, std::any y) {
-    std::cout<<"div2"<<std::endl;
+  //  std::cout<<"div2"<<std::endl;
     sjtu::int2048 ans = 0;
     if (std::any_cast<sjtu::int2048>(&x))
       ans = std::any_cast<sjtu::int2048>(x);
     else
       ans = std::any_cast<bool>(x);
-    std::cout<<"div2_half_down"<<std::endl;
+  //  std::cout<<"div2_half_down"<<std::endl;
     if (std::any_cast<sjtu::int2048>(&y))
       ans /= std::any_cast<sjtu::int2048>(y);
     else
       ans /= std::any_cast<bool>(y);
-    std::cout<<"div2_down"<<std::endl;
+  //  std::cout<<"div2_down"<<std::endl;
     return ans;
   }
 
@@ -232,6 +233,7 @@ public:
   std::any visitExpr_stmt(Python3Parser::Expr_stmtContext *ctx) override {
     auto array = ctx->testlist();
     auto au = ctx->augassign();
+    //  std::cout<<ctx->getText()<<std::endl;
     if (au == nullptr) {
       auto val =
           std::any_cast<std::vector<std::any>>(visit(array[array.size() - 1]));
@@ -294,9 +296,11 @@ public:
       auto x = array[0]->getText();
       if (scope[cur_num].query(x)) {
         std::any v = scope[cur_num].var_query(x);
+  //  std::cout<<ctx->getText()<<std::endl;
         scope[cur_num].var_register(x, div2(v, val[0]));
       } else {
         std::any v = scope[0].var_query(x);
+  //  std::cout<<ctx->getText()<<std::endl;
         scope[0].var_register(x, div2(v, val[0]));
       }
     } else if (au->getText() == "%=") {
@@ -304,11 +308,14 @@ public:
       auto x = array[0]->getText();
       if (scope[cur_num].query(x)) {
         std::any v = scope[cur_num].var_query(x);
-        scope[cur_num].var_register(x, del(v, mul(div2(v, val), val[0])));
+  //  std::cout<<ctx->getText()<<std::endl;
+        scope[cur_num].var_register(x, del(v, mul(div2(v, val[0]), val[0])));
       } else {
         std::any v = scope[0].var_query(x);
-        scope[0].var_register(x, del(v, mul(div2(v, val), val[0])));
+  //  std::cout<<ctx->getText()<<std::endl;
+        scope[0].var_register(x, del(v, mul(div2(v, val[0]), val[0])));
       }
+    //  std::cout<<"have_mod"<<std::endl;
     }
     return 1;
   }
@@ -360,6 +367,10 @@ public:
     while (turn_to_bool(visit(ctx->test()))) {
       std::any x = visit(ctx->suite());
       if (std::any_cast<do_break>(&x)) {
+        //  std::cout<<"breakfinal"<<std::endl;
+        return 0;
+      }
+      if (std::any_cast<do_return>(&x)) {
         //  std::cout<<"breakfinal"<<std::endl;
         return 0;
       }
@@ -449,7 +460,8 @@ public:
     if (ctx->not_test()) {
       return !turn_to_bool(visit(ctx->not_test()));
     }
-    return visit(ctx->comparison());
+    auto want=visit(ctx->comparison());
+    return want;
   }
   double get_val(std::any x) {
     if (std::any_cast<sjtu::int2048>(&x)) {
@@ -763,9 +775,11 @@ public:
       else if (op[i - 1]->getText() == "/")
         ans = div1(ans, visit(array[i]));
       else if (op[i - 1]->getText() == "//")
+  //  std::cout<<ctx->getText()<<std::endl,
         ans = div2(ans, visit(array[i]));
       else {
         std::any val = visit(array[i]);
+  //  std::cout<<ctx->getText()<<std::endl;
         ans = del(ans, mul(div2(ans, val), val));
       }
     }
@@ -784,7 +798,8 @@ public:
           return -std::any_cast<double>(x);
       }
     }
-    return visit(ctx->atom_expr());
+    auto want=visit(ctx->atom_expr());
+    return want;
   }
 
   std::string double_to_string(double x){
@@ -926,11 +941,15 @@ public:
       auto re = visit(fuc[num].into_fuc());
       scope[cur_num].clear();
       cur_num--;
-      if(std::any_cast<do_return>(&re))
-        return std::any_cast<do_return>(re).ans;
+      if(std::any_cast<do_return>(&re)){
+        auto want = std::any_cast<do_return>(re).ans;
+        if(want.size()==1) return want[0];
+        return want;
+      }
       return 0;
     }
-    return visit(ctx->atom());
+    auto want=visit(ctx->atom());
+    return want;
   }
 
   std::any visitTrailer(Python3Parser::TrailerContext *ctx) override {
@@ -964,8 +983,10 @@ public:
     return false;
   }
   std::any visitAtom(Python3Parser::AtomContext *ctx) override {
+  //  std::cout<<ctx->getText()<<std::endl;
     if (ctx->NUMBER()) {
       if(is_double(ctx->NUMBER()->getText())) return string_to_double(ctx->NUMBER()->getText());
+  //  std::cout<<"NOMBER"<<std::endl;
       return sjtu::int2048(ctx->NUMBER()->getText());
     }
     if (ctx->NAME()) {
