@@ -9,7 +9,7 @@
 class EvalVisitor : public Python3ParserBaseVisitor {
 public:
   std::any visitFuncdef(Python3Parser::FuncdefContext *ctx) override {
-    std::cout<<ctx->getText()<<std::endl;
+  //  std::cout<<ctx->getText()<<std::endl;
     std::string x = ctx->NAME()->getText();
     fuc_num++;
     fucTable[x]=fuc_num;
@@ -36,6 +36,7 @@ public:
     for(int i=0;i<val.size();i++){
       fuc[fuc_num].fuc_register_var_val(visit(val[i]));
     }
+    return 1;
   }
 
   std::any visitTfpdef(Python3Parser::TfpdefContext *ctx) override {

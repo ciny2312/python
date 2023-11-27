@@ -452,7 +452,7 @@ public:
       return std::any_cast<double>(x);
     }
     if (std::any_cast<std::string>(&x)){
-      return string_to_int(std::any_cast<std::string>(x));
+      return string_to_double(std::any_cast<std::string>(x));
     }
     return std::any_cast<bool>(x);
   }
@@ -540,14 +540,108 @@ public:
                         std::any_cast<sjtu::int2048>(ans[i]));
               continue;
             }
-          /*  if(std::any_cast<sjtu::int2048>(&ans[i - 1])){
+            if(std::any_cast<sjtu::int2048>(&ans[i - 1])){
               if(std::any_cast<double>(&ans[i])){
-                
+                sjtu::int2048 val(std::any_cast<double>(ans[i]));
+                if (op[i - 1]->getText() == "==")
+                flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) == val);
+                else if (op[i - 1]->getText() == "<=")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) <=val);
+                else if (op[i - 1]->getText() == ">=")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) >=val);
+                else if (op[i - 1]->getText() == "<")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) <val);
+                else if (op[i - 1]->getText() == ">")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) >val);
+                else
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) !=val);
               }
+              if(std::any_cast<std::string>(&ans[i])){
+                sjtu::int2048 val;
+                if(std::any_cast<std::string>(ans[i]).length()<=300)
+                  val=sjtu::int2048(string_to_double(std::any_cast<std::string>(ans[i])));
+                else val=sjtu::int2048(std::any_cast<std::string>(ans[i]));
+                if (op[i - 1]->getText() == "==")
+                flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) == val);
+                else if (op[i - 1]->getText() == "<=")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) <=val);
+                else if (op[i - 1]->getText() == ">=")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) >=val);
+                else if (op[i - 1]->getText() == "<")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) <val);
+                else if (op[i - 1]->getText() == ">")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) >val);
+                else
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) !=val);
+              }
+              if(std::any_cast<bool>(&ans[i])){
+                sjtu::int2048 val(std::any_cast<bool>(ans[i]));
+                if (op[i - 1]->getText() == "==")
+                flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) == val);
+                else if (op[i - 1]->getText() == "<=")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) <=val);
+                else if (op[i - 1]->getText() == ">=")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) >=val);
+                else if (op[i - 1]->getText() == "<")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) <val);
+                else if (op[i - 1]->getText() == ">")
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) >val);
+                else
+                  flag &= (std::any_cast<sjtu::int2048>(ans[i - 1]) !=val);
+              }
+              continue;
             }
             if(std::any_cast<sjtu::int2048>(&ans[i])){
-              
-            }*/
+              if(std::any_cast<double>(&ans[i-1])){
+                sjtu::int2048 val(std::any_cast<double>(ans[i-1]));
+                if (op[i - 1]->getText() == "==")
+                flag &= (val==std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == "<=")
+                flag &= (val<=std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == ">=")
+                flag &= (val>=std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == "<")
+                flag &= (val<std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == ">")
+                flag &= (val>std::any_cast<sjtu::int2048>(ans[i]));
+                else
+                flag &= (val!=std::any_cast<sjtu::int2048>(ans[i]));
+              }
+              if(std::any_cast<std::string>(&ans[i])){
+                sjtu::int2048 val;
+                if(std::any_cast<std::string>(ans[i]).length()<=300)
+                  val=sjtu::int2048(string_to_double(std::any_cast<std::string>(ans[i])));
+                else val=sjtu::int2048(std::any_cast<std::string>(ans[i]));
+                if (op[i - 1]->getText() == "==")
+                flag &= (val==std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == "<=")
+                flag &= (val<=std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == ">=")
+                flag &= (val>=std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == "<")
+                flag &= (val<std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == ">")
+                flag &= (val>std::any_cast<sjtu::int2048>(ans[i]));
+                else
+                flag &= (val!=std::any_cast<sjtu::int2048>(ans[i]));
+              }
+              if(std::any_cast<bool>(&ans[i-1])){
+                sjtu::int2048 val(std::any_cast<bool>(ans[i-1]));
+                if (op[i - 1]->getText() == "==")
+                flag &= (val==std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == "<=")
+                flag &= (val<=std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == ">=")
+                flag &= (val>=std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == "<")
+                flag &= (val<std::any_cast<sjtu::int2048>(ans[i]));
+                else if (op[i - 1]->getText() == ">")
+                flag &= (val>std::any_cast<sjtu::int2048>(ans[i]));
+                else
+                flag &= (val!=std::any_cast<sjtu::int2048>(ans[i]));
+              }
+              continue;
+            }
           }
       if (op[i - 1]->getText() == "==") {
         if (fabs(get_val(ans[i - 1]) - get_val(ans[i])) > 1e-9)
@@ -754,7 +848,7 @@ public:
           else if (std::any_cast<double>(&array[0]))
             ans = std::any_cast<double>(array[0]);
           else
-            ans = string_to_int(std::any_cast<std::string>(array[0]));
+            ans = sjtu::int2048(std::any_cast<std::string>(array[0]));
           return ans;
         }
         if (fucname == "float") {
@@ -838,15 +932,6 @@ public:
     return 0;
   }
 
-  int string_to_int(std::string s) {
-    int ans = 0, f = 1;
-    if (s[0] == '-')
-      s = s.substr(1), f = -f;
-    for (int i = 0; i < s.length(); i++) {
-      ans = ans * 10 + s[i] - '0';
-    }
-    return ans * f;
-  }
   double string_to_double(std::string s) {
     double ans = 0, bit = 0;
     int f = 1;
