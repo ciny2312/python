@@ -4,7 +4,7 @@
 
 #include "Python3ParserBaseVisitor.h"
 #include "int2048.h"
-#include "Fuction.h"
+//#include "Fuction.h"
 
 class EvalVisitor : public Python3ParserBaseVisitor {
   int scope_num = 0, cur_num = 0, fuc_num = 0;
@@ -71,12 +71,13 @@ public:
   }
 
   std::any add(std::any x, std::any y) {
+  //  std::cout<<"add"<<std::endl;
     if (std::any_cast<double>(&x) || std::any_cast<double>(&y)) {
       double ans = 0;
       if (std::any_cast<double>(&x))
         ans += std::any_cast<double>(x);
-      else if (std::any_cast<int>(&x))
-        ans += std::any_cast<int>(x);
+      else if (std::any_cast<sjtu::int2048>(&x))
+        ans += turn_to_double(std::any_cast<sjtu::int2048>(x));
       else
         ans += std::any_cast<bool>(x);
       if (std::any_cast<double>(&y))
@@ -103,6 +104,7 @@ public:
     }
   }
   std::any del(std::any x, std::any y) {
+  //  std::cout<<"del"<<std::endl;
     if (std::any_cast<double>(&x) || std::any_cast<double>(&y)) {
       double ans = 0;
       if (std::any_cast<double>(&x))
@@ -132,6 +134,7 @@ public:
     }
   }
   std::any mul(std::any x, std::any y) {
+  //  std::cout<<"mul"<<std::endl;
     if (std::any_cast<double>(&x) || std::any_cast<double>(&y)) {
       double ans = 1;
       if (std::any_cast<double>(&x))
@@ -186,6 +189,7 @@ public:
     }
   }
   std::any div1(std::any x, std::any y) {
+  //  std::cout<<"div1"<<std::endl;
     double ans = 0;
     if (std::any_cast<double>(&x))
       ans = std::any_cast<double>(x);
@@ -202,15 +206,18 @@ public:
     return ans;
   }
   std::any div2(std::any x, std::any y) {
+    std::cout<<"div2"<<std::endl;
     sjtu::int2048 ans = 0;
     if (std::any_cast<sjtu::int2048>(&x))
       ans = std::any_cast<sjtu::int2048>(x);
     else
       ans = std::any_cast<bool>(x);
+    std::cout<<"div2_half_down"<<std::endl;
     if (std::any_cast<sjtu::int2048>(&y))
       ans /= std::any_cast<sjtu::int2048>(y);
     else
       ans /= std::any_cast<bool>(y);
+    std::cout<<"div2_down"<<std::endl;
     return ans;
   }
 
@@ -903,7 +910,7 @@ public:
         }
       }
       if(fucname=="print") return 0;
-//    std::cout<<ctx->getText()<<' '<<fucname<<std::endl;
+  //    std::cout<<ctx->getText()<<' '<<fucname<<std::endl;
       int num = fucTable[fucname];
       cur_num++;
       int ex = fuc[num].var.size() - fuc[num].var_val.size();
@@ -950,10 +957,15 @@ public:
     std::string ans = x.substr(1, x.size() - 2);
     return ans;
   }
-
+  bool is_double(std::string s){
+    for(int i=0;i<s.length();i++){
+      if(s[i]=='.') return true;
+    }
+    return false;
+  }
   std::any visitAtom(Python3Parser::AtomContext *ctx) override {
     if (ctx->NUMBER()) {
-
+      if(is_double(ctx->NUMBER()->getText())) return string_to_double(ctx->NUMBER()->getText());
       return sjtu::int2048(ctx->NUMBER()->getText());
     }
     if (ctx->NAME()) {
@@ -1003,7 +1015,12 @@ public:
     return visit(array[1]);
   }
 
-
+  std::any visitFuncdef(Python3Parser::FuncdefContext *) override;
+  std::any visitParameters(Python3Parser::ParametersContext *) override;
+  std::any visitTypedargslist(Python3Parser::TypedargslistContext *) override;
+  std::any visitTfpdef(Python3Parser::TfpdefContext *) override;
+  std::any visitReturn_stmt(Python3Parser::Return_stmtContext *) override;
+/*
   std::any visitFuncdef(Python3Parser::FuncdefContext *ctx) override {
   //  std::cout<<ctx->getText()<<std::endl;
     std::string x = ctx->NAME()->getText();
@@ -1045,7 +1062,7 @@ public:
       x.ans=std::any_cast<std::vector<std::any> >(visit(ctx->testlist()));
     }
     return x;
-  }
+  }*/
 };
 
 #endif // PYTHON_INTERPRETER_EVALVISITOR_H

@@ -539,7 +539,7 @@ namespace sjtu {
   double turn_to_double(const int2048 &x){
     double ans=0;
     for(int i=x.a.size()-1;i>=0;i--){
-      ans=ans*10+x.a[i];
+      ans=ans*bit+x.a[i];
     }
     return ans;
   }

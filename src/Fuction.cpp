@@ -1,14 +1,7 @@
-#pragma once
-#ifndef PYTHON_INTERPRETER_EVALVISITOR_H
-#define PYTHON_INTERPRETER_EVALVISITOR_H
-
 #include "Python3ParserBaseVisitor.h"
-#include "int2048.h"
 #include "Evalvisitor.h"
-
-class EvalVisitor : public Python3ParserBaseVisitor {
-public:
-  std::any visitFuncdef(Python3Parser::FuncdefContext *ctx) override {
+#include "int2048.h"
+  std::any EvalVisitor::visitFuncdef(Python3Parser::FuncdefContext *ctx) {
   //  std::cout<<ctx->getText()<<std::endl;
     std::string x = ctx->NAME()->getText();
     fuc_num++;
@@ -20,14 +13,14 @@ public:
     return 1;
   }
 
-  std::any visitParameters(Python3Parser::ParametersContext *ctx) override {
+  std::any EvalVisitor::visitParameters(Python3Parser::ParametersContext *ctx)  {
     if(ctx->typedargslist())
       return visit(ctx->typedargslist());
     nothing x;
     return x;
   }
 
-  std::any visitTypedargslist(Python3Parser::TypedargslistContext *ctx) override {
+  std::any EvalVisitor::visitTypedargslist(Python3Parser::TypedargslistContext *ctx) {
     auto array = ctx ->tfpdef();
     auto val = ctx -> test();
     for(int i=0;i< array.size();i++){
@@ -39,17 +32,14 @@ public:
     return 1;
   }
 
-  std::any visitTfpdef(Python3Parser::TfpdefContext *ctx) override {
+  std::any EvalVisitor::visitTfpdef(Python3Parser::TfpdefContext *ctx) {
     return ctx->NAME()->getText();
   }
 
-  std::any visitReturn_stmt(Python3Parser::Return_stmtContext *ctx) override {
+  std::any EvalVisitor::visitReturn_stmt(Python3Parser::Return_stmtContext *ctx) {
     do_return x;
     if(ctx->testlist()){
       x.ans=std::any_cast<std::vector<std::any> >(visit(ctx->testlist()));
     }
     return x;
   }
-};
-
-#endif // PYTHON_INTERPRETER_EVALVISITOR_H
